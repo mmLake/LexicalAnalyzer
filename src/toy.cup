@@ -1,5 +1,12 @@
 import java_cup.runtime.*;
 
+scan with 
+{:
+		Symbol nextToken = getScanner().next_token();
+		//System.out.print("[Shift]");
+		return nextToken;
+:}
+
 /* Terminals (tokens returned by the scanner). */
 terminal         BOOLEAN, BREAK, CLASS, DOUBLE, ELSE, EXTENDS, FOR, IF, IMPLEMENTS, INT,
                  INTERFACE, NEWARRAY, PRINTLN, READLN, RETURN, STRING, VOID, WHILE, PLUS, MINUS, MULTIPLICATION,
@@ -14,7 +21,7 @@ non terminal     Program, DeclPlus, Decl, VariableDecl, FunctionDecl, ClassDecl,
                  FieldStar, IdPlusComma, Field, PrototypeStar, Prototype, VariableDeclPlus,
                  StmtPlus, Stmt, OptionalExpr, Expr, IfStmt, OptionalElse, WhileStmt,
                  ForStmt, BreakStmt, ReturnStmt, PrintStmt, ExprPlusComma, Lvalue,
-                 Constant, Call, Actuals;
+                 Constant, Call, Actuals, LvaluePrime;
 
 /* Precedences */
 precedence left ELSE;
@@ -150,19 +157,26 @@ Expr ::= Lvalue ASSIGNOP Expr {: System.out.print("[reduce 66]");:}
        | NEW LEFTPAREN ID RIGHTPAREN {: System.out.print("[reduce 87]");:}
        | NEWARRAY LEFTPAREN INTCONSTANT COMMA Type RIGHTPAREN {: System.out.print("[reduce 88]");:}
 ;
+
 Lvalue ::= ID {: System.out.print("[reduce 89]");:}
-         | Lvalue LEFTBRACKET Expr RIGHTBRACKET {: System.out.print("[reduce 90]");:}
-         | Lvalue PERIOD ID {: System.out.print("[reduce 91]");:}
+		| ID LvaluePrime {: System.out.print("[reduce 90]");:}
 ;
-Call ::= ID LEFTPAREN Actuals RIGHTPAREN {: System.out.print("[reduce 92]");:}
-       | ID PERIOD ID LEFTPAREN Actuals RIGHTPAREN {: System.out.print("[reduce 93]");:}
+
+LvaluePrime ::= LEFTBRACKET Expr RIGHTBRACKET {: System.out.print("[reduce 91]");:}
+		| PERIOD ID {: System.out.print("[reduce 92]");:}
+		| LEFTBRACKET Expr RIGHTBRACKET LvaluePrime {: System.out.print("[reduce 93]");:}
+		| PERIOD ID LvaluePrime {: System.out.print("[reduce 94]");:}
 ;
-Actuals ::= ExprPlusComma  {: System.out.print("[reduce 94]");:}
-          | /* empty */ {: System.out.print("[reduce 95]");:}
+
+Call ::= ID LEFTPAREN Actuals RIGHTPAREN {: System.out.print("[reduce 95]");:}
+       | ID PERIOD ID LEFTPAREN Actuals RIGHTPAREN {: System.out.print("[reduce 96]");:}
 ;
-Constant ::= INTCONSTANT  {: System.out.print("[reduce 96]");:}
-           | DOUBLECONSTANT  {: System.out.print("[reduce 97]");:}
-           | STRINGCONSTANT  {: System.out.print("[reduce 98]");:}
-           | BOOLEANCONSTANT  {: System.out.print("[reduce 99]");:}
-           | NULL {: System.out.print("[reduce 100]");:}
+Actuals ::= ExprPlusComma  {: System.out.print("[reduce 97]");:}
+          | /* empty */ {: System.out.print("[reduce 98]");:}
+;
+Constant ::= INTCONSTANT  {: System.out.print("[reduce 99]");:}
+           | DOUBLECONSTANT  {: System.out.print("[reduce 100]");:}
+           | STRINGCONSTANT  {: System.out.print("[reduce 101]");:}
+           | BOOLEANCONSTANT  {: System.out.print("[reduce 102]");:}
+           | NULL {: System.out.print("[reduce 103]");:}
 ;
